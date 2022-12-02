@@ -2,6 +2,7 @@
 name = "aoc_2022"
 version = "0.1.0"
 edition = "2021"
+default-run = "day2"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -14,3 +15,7 @@ tokio = { version = "1.22.0", features = ["full"] }
 [[bin]]
 name = "day1"
 path = "src/day1.rs"
+
+[[bin]]
+name = "day2"
+path = "src/day2.rs"
