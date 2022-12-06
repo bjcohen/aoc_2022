@@ -39,100 +39,103 @@ async fn main() -> Result<()> {
 
     let mut cursor = input4
         .aggregate(
-            [doc! {
-                "$project": doc! {
-                    "s1": doc! {
-                        "$toInt": doc! {
-                            "$arrayElemAt": [ doc! {
-                                "$split": [ doc! {
-                                    "$arrayElemAt": [ doc! {
-                                        "$split": [ "$pairs", "," ],
-                                    }, 0],
-                                }, "-" ],
-                            }, 0],
-                        },
-                    },
-                    "e1": doc! {
-                        "$toInt": doc! {
-                            "$arrayElemAt": [ doc! {
-                                "$split": [ doc! {
-                                    "$arrayElemAt": [ doc! {
-                                        "$split": [ "$pairs", "," ],
-                                    }, 0],
-                                }, "-" ],
-                            }, 1],
-                        },
-                    },
-                    "s2": doc! {
-                        "$toInt": doc! {
-                            "$arrayElemAt": [ doc! {
-                                "$split": [ doc! {
-                                    "$arrayElemAt": [ doc! {
-                                        "$split": [ "$pairs", "," ],
-                                    }, 1],
-                                }, "-" ],
-                            }, 0],
-                        },
-                    },
-                    "e2": doc! {
-                        "$toInt": doc! {
-                            "$arrayElemAt": [ doc! {
-                                "$split": [ doc! {
-                                    "$arrayElemAt": [ doc! {
-                                        "$split": [ "$pairs", "," ],
-                                    }, 1],
-                                }, "-" ],
-                            }, 1],
-                        },
-                    },
-                },
-            }, doc! {
-                "$group": doc! {
-                    "_id": Bson::Null,
-                    "numContained": doc! {
-                        "$sum": doc! {
+            [
+                doc! {
+                    "$project": doc! {
+                        "s1": doc! {
                             "$toInt": doc! {
-                                "$or": [
-                                    doc! {
-                                        "$and": [
-                                            doc! {
-                                                "$gte": [ "$s2", "$s1" ],
-                                            },
-                                            doc! {
-                                                "$lte": [ "$e2", "$e1" ],
-                                            },
-                                        ],
-                                    },
-                                    doc! {
-                                        "$and": [
-                                            doc! {
-                                                "$gte": [ "$s1", "$s2" ],
-                                            },
-                                            doc! {
-                                                "$lte": [ "$e1", "$e2" ],
-                                            },
-                                        ],
-                                    },
-                                ],
+                                "$arrayElemAt": [ doc! {
+                                    "$split": [ doc! {
+                                        "$arrayElemAt": [ doc! {
+                                            "$split": [ "$pairs", "," ],
+                                        }, 0],
+                                    }, "-" ],
+                                }, 0],
                             },
                         },
-                    },
-                    "numOverlapping": doc! {
-                        "$sum": doc! {
+                        "e1": doc! {
                             "$toInt": doc! {
-                                "$and": [
-                                    doc! {
-                                        "$lte": [ "$s1", "$e2" ],
-                                    },
-                                    doc! {
-                                        "$lte": [ "$s2", "$e1" ],
-                                    },
-                                ],
+                                "$arrayElemAt": [ doc! {
+                                    "$split": [ doc! {
+                                        "$arrayElemAt": [ doc! {
+                                            "$split": [ "$pairs", "," ],
+                                        }, 0],
+                                    }, "-" ],
+                                }, 1],
+                            },
+                        },
+                        "s2": doc! {
+                            "$toInt": doc! {
+                                "$arrayElemAt": [ doc! {
+                                    "$split": [ doc! {
+                                        "$arrayElemAt": [ doc! {
+                                            "$split": [ "$pairs", "," ],
+                                        }, 1],
+                                    }, "-" ],
+                                }, 0],
+                            },
+                        },
+                        "e2": doc! {
+                            "$toInt": doc! {
+                                "$arrayElemAt": [ doc! {
+                                    "$split": [ doc! {
+                                        "$arrayElemAt": [ doc! {
+                                            "$split": [ "$pairs", "," ],
+                                        }, 1],
+                                    }, "-" ],
+                                }, 1],
                             },
                         },
                     },
                 },
-            }],
+                doc! {
+                    "$group": doc! {
+                        "_id": Bson::Null,
+                        "numContained": doc! {
+                            "$sum": doc! {
+                                "$toInt": doc! {
+                                    "$or": [
+                                        doc! {
+                                            "$and": [
+                                                doc! {
+                                                    "$gte": [ "$s2", "$s1" ],
+                                                },
+                                                doc! {
+                                                    "$lte": [ "$e2", "$e1" ],
+                                                },
+                                            ],
+                                        },
+                                        doc! {
+                                            "$and": [
+                                                doc! {
+                                                    "$gte": [ "$s1", "$s2" ],
+                                                },
+                                                doc! {
+                                                    "$lte": [ "$e1", "$e2" ],
+                                                },
+                                            ],
+                                        },
+                                    ],
+                                },
+                            },
+                        },
+                        "numOverlapping": doc! {
+                            "$sum": doc! {
+                                "$toInt": doc! {
+                                    "$and": [
+                                        doc! {
+                                            "$lte": [ "$s1", "$e2" ],
+                                        },
+                                        doc! {
+                                            "$lte": [ "$s2", "$e1" ],
+                                        },
+                                    ],
+                                },
+                            },
+                        },
+                    },
+                },
+            ],
             None,
         )
         .await?;
