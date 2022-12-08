@@ -22,15 +22,17 @@ fn main() -> Result<()> {
             let (_, dir) = line.split_at(5);
             stack.push(dir.to_string());
         } else if !line.starts_with("$ ls") && !line.starts_with("dir") {
-            let (size_str, filename) = line.split_once(' ').ok_or(anyhow!("couldn't split"))?;
+            let (size_str, filename) = line
+                .split_once(' ')
+                .ok_or_else(|| anyhow!("couldn't split"))?;
             let size = size_str.parse::<u32>()?;
             for i in 0..stack.len() + 1 {
                 let mut k = stack.iter().take(i).join("/");
-                k.push_str("/");
+                k.push('/');
                 sizes.entry(k).and_modify(|s| *s += size).or_insert(size);
             }
             let mut k = stack.iter().join("/");
-            k.push_str("/");
+            k.push('/');
             k.push_str(filename);
             sizes.entry(k).and_modify(|s| *s += size).or_insert(size);
         }
@@ -40,22 +42,25 @@ fn main() -> Result<()> {
         "{}",
         sizes
             .iter()
-            .filter(|(path, size)| path.ends_with("/") && **size <= 100000)
+            .filter(|(path, size)| path.ends_with('/') && **size <= 100000)
             .map(|(_path, size)| size)
             .sum::<u32>()
     );
 
-    let space_needed =
-        30000000 - (70000000 - sizes.get("/").ok_or(anyhow!("couldn't find root dir"))?);
+    let space_needed = 30000000
+        - (70000000
+            - sizes
+                .get("/")
+                .ok_or_else(|| anyhow!("couldn't find root dir"))?);
 
     println!(
         "{}",
         sizes
             .iter()
-            .filter(|(path, size)| path.ends_with("/") && **size > space_needed)
+            .filter(|(path, size)| path.ends_with('/') && **size > space_needed)
             .map(|(_path, size)| size)
             .min()
-            .ok_or(anyhow!("couldn't find a min size"))?
+            .ok_or_else(|| anyhow!("couldn't find a min size"))?
     );
 
     Ok(())

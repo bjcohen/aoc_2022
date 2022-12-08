@@ -19,8 +19,10 @@ fn main() -> Result<()> {
             (0..n).for_each(|_| stacks.push(vec![]));
         }
         for (i, mut chunk) in line.chars().chunks(4).into_iter().enumerate() {
-            let c = chunk.nth(1).ok_or(anyhow!("couldn't unwrap char"))?;
-            if c != ' ' && !c.is_digit(10) {
+            let c = chunk
+                .nth(1)
+                .ok_or_else(|| anyhow!("couldn't unwrap char"))?;
+            if c != ' ' && !c.is_ascii_digit() {
                 stacks[i].push(c);
             }
         }
@@ -38,14 +40,14 @@ fn main() -> Result<()> {
         let i = stacks[src - 1].len() - n;
         let mut to_move = stacks[src - 1].split_off(i);
         to_move.reverse();
-        stacks[dst - 1].extend_from_slice(&mut to_move);
+        stacks[dst - 1].extend_from_slice(&to_move);
     }
 
     println!(
         "{}",
         stacks
             .into_iter()
-            .map(|s| s.last().copied().ok_or(anyhow!("empty vec")))
+            .map(|s| s.last().copied().ok_or_else(|| anyhow!("empty vec")))
             .collect::<Result<String>>()?
     );
 
@@ -62,8 +64,10 @@ fn main() -> Result<()> {
             (0..n).for_each(|_| stacks.push(vec![]));
         }
         for (i, mut chunk) in line.chars().chunks(4).into_iter().enumerate() {
-            let c = chunk.nth(1).ok_or(anyhow!("couldn't unwrap char"))?;
-            if c != ' ' && !c.is_digit(10) {
+            let c = chunk
+                .nth(1)
+                .ok_or_else(|| anyhow!("couldn't unwrap char"))?;
+            if c != ' ' && !c.is_ascii_digit() {
                 stacks[i].push(c);
             }
         }
@@ -79,15 +83,15 @@ fn main() -> Result<()> {
             s[5].parse::<usize>()?,
         );
         let i = stacks[src - 1].len() - n;
-        let mut to_move = stacks[src - 1].split_off(i);
-        stacks[dst - 1].extend_from_slice(&mut to_move);
+        let to_move = stacks[src - 1].split_off(i);
+        stacks[dst - 1].extend_from_slice(&to_move);
     }
 
     println!(
         "{}",
         stacks
             .into_iter()
-            .map(|s| s.last().copied().ok_or(anyhow!("empty vec")))
+            .map(|s| s.last().copied().ok_or_else(|| anyhow!("empty vec")))
             .collect::<Result<String>>()?
     );
 
