@@ -90,6 +90,6 @@ fn main() -> Result<()> {
             .map(|s| s.last().copied().ok_or(anyhow!("empty vec")))
             .collect::<Result<String>>()?
     );
-    
+
     Ok(())
 }
