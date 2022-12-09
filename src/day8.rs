@@ -81,31 +81,97 @@ fn main() -> Result<()> {
 
     println!("{}", visible_trees);
 
-    let mut max_score = 0;
+    let mut score_l = repeat(repeat(0).take(h).collect::<Vec<i32>>())
+        .take(w)
+        .collect::<Vec<Vec<i32>>>();
+    let mut score_r = repeat(repeat(0).take(h).collect::<Vec<i32>>())
+        .take(w)
+        .collect::<Vec<Vec<i32>>>();
 
-    for i in 0..w {
-        for j in 0..h {
-            let l = (0..i)
-                .take_while(|k| grid[i - k - 1][j] < grid[i][j])
-                .count();
-            let r = (0..w - i - 1)
-                .take_while(|k| grid[i + k + 1][j] < grid[i][j])
-                .count();
-            let u = (0..j)
-                .take_while(|k| grid[i][j - k - 1] < grid[i][j])
-                .count();
-            let d = (0..h - j - 1)
-                .take_while(|k| grid[i][j + k + 1] < grid[i][j])
-                .count();
-            let score = if l < i { l + 1 } else { l }
-                * if r < w - i - 1 { r + 1 } else { r }
-                * if u < j { u + 1 } else { u }
-                * if d < h - j - 1 { d + 1 } else { d };
-            if score > max_score {
-                max_score = score;
+    for i in 0..h {
+        let mut lstack: Vec<(i32, usize)> = vec![];
+        let mut rstack: Vec<(i32, usize)> = vec![];
+        for j in 0..w {
+            let vl = grid[i][j];
+            while !lstack.is_empty()
+                && vl > lstack.last().ok_or_else(|| anyhow!("stack was empty"))?.0
+            {
+                lstack.pop();
             }
+            if lstack.is_empty() {
+                score_l[i][j] = i32::try_from(j)?;
+            } else {
+                score_l[i][j] =
+                    i32::try_from(j - lstack.last().ok_or_else(|| anyhow!("stack was empty"))?.1)?;
+            }
+            lstack.push((vl, j));
+            let vr = grid[i][w - j - 1];
+            while !rstack.is_empty()
+                && vr > rstack.last().ok_or_else(|| anyhow!("stack was empty"))?.0
+            {
+                rstack.pop();
+            }
+            if rstack.is_empty() {
+                score_r[i][w - j - 1] = i32::try_from(j)?;
+            } else {
+                score_r[i][w - j - 1] = i32::try_from(
+                    rstack.last().ok_or_else(|| anyhow!("stack was empty"))?.1 - (w - j - 1),
+                )?;
+            }
+            rstack.push((vr, w - j - 1));
         }
     }
+
+    let mut score_u = repeat(repeat(0).take(h).collect::<Vec<i32>>())
+        .take(w)
+        .collect::<Vec<Vec<i32>>>();
+    let mut score_d = repeat(repeat(0).take(h).collect::<Vec<i32>>())
+        .take(w)
+        .collect::<Vec<Vec<i32>>>();
+
+    for i in 0..w {
+        let mut ustack: Vec<(i32, usize)> = vec![];
+        let mut dstack: Vec<(i32, usize)> = vec![];
+        for j in 0..h {
+            let vu = grid[j][i];
+            while !ustack.is_empty()
+                && vu > ustack.last().ok_or_else(|| anyhow!("stack was empty"))?.0
+            {
+                ustack.pop();
+            }
+            if ustack.is_empty() {
+                score_u[j][i] = i32::try_from(j)?;
+            } else {
+                score_u[j][i] =
+                    i32::try_from(j - ustack.last().ok_or_else(|| anyhow!("stack was empty"))?.1)?;
+            }
+            ustack.push((vu, j));
+            let vd = grid[h - j - 1][i];
+            while !dstack.is_empty()
+                && vd > dstack.last().ok_or_else(|| anyhow!("stack was empty"))?.0
+            {
+                dstack.pop();
+            }
+            if dstack.is_empty() {
+                score_d[h - j - 1][i] = i32::try_from(j)?;
+            } else {
+                score_d[h - j - 1][i] = i32::try_from(
+                    dstack.last().ok_or_else(|| anyhow!("stack was empty"))?.1 - (h - j - 1),
+                )?;
+            }
+            dstack.push((vd, h - j - 1));
+        }
+    }
+
+    let max_score = izip!(score_l, score_r, score_u, score_d)
+        .map(|(ls, rs, us, ds)| {
+            izip!(ls, rs, us, ds)
+                .map(|(l, r, u, d)| l * r * u * d)
+                .max()
+                .expect("")
+        })
+        .max()
+        .ok_or_else(|| anyhow!("no max"))?;
 
     println!("{}", max_score);
 
