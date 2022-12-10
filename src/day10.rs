@@ -1,6 +1,5 @@
-use anyhow::{Error, Result};
+use anyhow::Result;
 use std::{
-    // collections::HashSet,
     fs::File,
     io::{BufRead, BufReader},
 };
@@ -9,8 +8,7 @@ fn main() -> Result<()> {
     let file = File::open("input10.txt")?;
     let lines = BufReader::new(file)
         .lines()
-        .map(|l| l.map_err(Error::new))
-        .collect::<Result<Vec<String>>>()?;
+        .collect::<Result<Vec<String>, std::io::Error>>()?;
 
     let mut reg = 1;
     let mut cycle = 1;
