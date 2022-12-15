@@ -59,12 +59,20 @@ fn main() -> Result<()> {
         let mut windows = path.windows(2);
         while let Some([(x1, y1), (x2, y2)]) = windows.next() {
             if x1 == x2 {
-                for i in usize::min(*y1, *y2)..usize::max(*y1, *y2) + 1 {
-                    grid[i][*x1 - xmin] = '#';
+                for row in grid
+                    .iter_mut()
+                    .take(usize::max(*y1, *y2) + 1)
+                    .skip(usize::min(*y1, *y2))
+                {
+                    row[*x1 - xmin] = '#';
                 }
             } else if y1 == y2 {
-                for i in usize::min(*x1, *x2)..usize::max(*x1, *x2) + 1 {
-                    grid[*y1][i - xmin] = '#';
+                for cell in grid[*y1]
+                    .iter_mut()
+                    .take(usize::max(*x1, *x2) + 1 - xmin)
+                    .skip(usize::min(*x1, *x2) - xmin)
+                {
+                    *cell = '#';
                 }
             } else {
                 bail!("xs or ys must be equal")
@@ -116,12 +124,20 @@ fn main() -> Result<()> {
         let mut windows = path.windows(2);
         while let Some([(x1, y1), (x2, y2)]) = windows.next() {
             if x1 == x2 {
-                for i in usize::min(*y1, *y2)..usize::max(*y1, *y2) + 1 {
-                    grid[i][*x1 - xmin] = '#';
+                for row in grid
+                    .iter_mut()
+                    .take(usize::max(*y1, *y2) + 1)
+                    .skip(usize::min(*y1, *y2))
+                {
+                    row[*x1 - xmin] = '#';
                 }
             } else if y1 == y2 {
-                for i in usize::min(*x1, *x2)..usize::max(*x1, *x2) + 1 {
-                    grid[*y1][i - xmin] = '#';
+                for cell in grid[*y1]
+                    .iter_mut()
+                    .take(usize::max(*x1, *x2) + 1 - xmin)
+                    .skip(usize::min(*x1, *x2) - xmin)
+                {
+                    *cell = '#';
                 }
             } else {
                 bail!("xs or ys must be equal")
