@@ -87,7 +87,6 @@ fn part1(blueprints: &[Blueprint]) -> Result<i64> {
         .iter()
         .enumerate()
         .map(|(i, b)| {
-            println!("solving pt 1 {}", i);
             solve(
                 b,
                 State {
@@ -116,7 +115,6 @@ fn part2(blueprints: &[Blueprint]) -> Result<i64> {
         .iter()
         .take(3)
         .map(|b| {
-            println!("solving pt 2");
             solve(
                 b,
                 State {
