@@ -1,7 +1,8 @@
 use anyhow::{anyhow, Error, Result};
 use std::{
+    cmp::Ordering,
     fs::File,
-    io::{BufRead, BufReader, Read}, cmp::Ordering,
+    io::{BufRead, BufReader, Read},
 };
 
 fn parse<R: Read>(reader: R) -> Result<Vec<i64>> {
@@ -40,8 +41,8 @@ fn mix(numbers: &mut Vec<(i64, usize)>, n: usize) -> Result<()> {
                 .try_into()?;
             let tmp = numbers[curri];
             match newi.cmp(&curri) {
-                Ordering::Greater => numbers.copy_within(curri+1..newi+1, curri),
-                Ordering::Less => numbers.copy_within(newi..curri, newi+1),
+                Ordering::Greater => numbers.copy_within(curri + 1..newi + 1, curri),
+                Ordering::Less => numbers.copy_within(newi..curri, newi + 1),
                 Ordering::Equal => (),
             }
             numbers[newi] = tmp;
