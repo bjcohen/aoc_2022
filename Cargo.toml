@@ -2,7 +2,7 @@
 name = "aoc_2022"
 version = "0.1.0"
 edition = "2021"
-default-run = "day20"
+default-run = "day21"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -89,3 +89,7 @@ path = "src/day19.rs"
 [[bin]]
 name = "day20"
 path = "src/day20.rs"
+
+[[bin]]
+name = "day21"
+path = "src/day21.rs"
